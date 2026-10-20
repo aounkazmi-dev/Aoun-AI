@@ -53,4 +53,4 @@ Do not claim that DataBuddy is a general autonomous data scientist, that every g
 
 ## Suggested explanation
 
-“DataBuddy is where my data-science and AI-engineering interests meet. I built an agent workflow that can route a question to SQL, statistical analysis, visualization, reporting, or a Python fallback, so the answer can be grounded in computation rather than only generated text.”
+“DataBuddy is where Aoun's data-science and AI-engineering interests meet. He built an agent workflow that can route a question to SQL, statistical analysis, visualization, reporting, or a Python fallback, so the answer can be grounded in computation rather than only generated text.”
