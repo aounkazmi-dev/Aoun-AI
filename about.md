@@ -14,5 +14,3 @@ His strongest portfolio narrative is the connection between data and useful soft
 ## Public positioning
 
 Describe Aoun as an ambitious CS student with hands-on project experience and a clear AI engineering trajectory. His project-based work is meaningful evidence of practical development, but it is not a substitute for professional employment and must not be presented as such.
-
-See `profile.md`, `skills.md`, `experience.md`, and the individual project files for the fuller account. Use `knowledge-policy.md` as the assistant's system instructions, not as an ordinary RAG source document.
