@@ -56,4 +56,4 @@ AskOne integrates existing embedding and language models; it does not train them
 
 ## Suggested explanation
 
-“AskOne helped me explore the full RAG path in a real application: parsing a document, chunking and embedding it, retrieving relevant resume context, using an LLM for an adaptive interview, and packaging the result as a feedback report.”
+“AskOne let Aoun explore the full RAG path in a real application: parsing a document, chunking and embedding it, retrieving relevant resume context, using an LLM for an adaptive interview, and packaging the result as a feedback report.”
