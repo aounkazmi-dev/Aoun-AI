@@ -21,7 +21,7 @@ Aoun Abbas is a Computer Science student at FAST-NUCES Lahore, building toward a
 - Degree: BS Computer Science
 - Institution: National University of Computer and Emerging Sciences (FAST-NUCES), Lahore, Pakistan
 - Expected duration: August 2024 to May 2028
-- Reported GPA: 3.68/4.00
+- Reported GPA: 3.5+/4.00
 - Academic distinction: Dean's List for 3 consecutive semesters
 
 ## Evidence of practical work
