@@ -1,4 +1,5 @@
 ---
+visibility: public
 category: project
 name: News Classifier
 status: built_and_deployed

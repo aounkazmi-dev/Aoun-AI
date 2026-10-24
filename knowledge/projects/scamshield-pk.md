@@ -1,4 +1,5 @@
 ---
+visibility: public
 category: project_idea
 name: ScamShield PK
 status: planned_not_implemented

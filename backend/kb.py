@@ -1,49 +1,23 @@
-"""Shared helpers: where the knowledge base lives, how to read and chunk it,
-and how to turn text into embeddings.
+"""Public Markdown ingestion and normalized Gemini embeddings."""
 
-Only the standard library is needed to import this file. Gemini is imported
-lazily inside embed(), so the chunking can be tested without any API keys.
-"""
-import os
+import hashlib
+import json
+import math
 import re
 import time
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-try:
-    from dotenv import load_dotenv
+from backend.config import settings
 
-    load_dotenv()
-except ImportError:  # python-dotenv is optional
-    pass
-
-ROOT = Path(__file__).resolve().parent
-
-
-def _path_setting(name: str, default: Path) -> Path:
-    """Read a folder from .env. Relative paths count from this backend folder
-    (not from wherever you happened to run the command); empty values use the default."""
-    path = Path(os.getenv(name) or default)
-    return (path if path.is_absolute() else ROOT / path).resolve()
-
-
-KB_DIR = _path_setting("KB_DIR", ROOT.parent / "knowledge")
-DB_DIR = _path_setting("CHROMA_DIR", ROOT / "chroma_db")
 COLLECTION = "aoun_kb"
-
-# Model names change often. Check the Embeddings page in the Gemini docs and override in .env.
-# If you change the embedding model or dimension, re-run ingest.py (old vectors won't match).
-EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001")
-EMBED_DIM = int(os.getenv("GEMINI_EMBED_DIM", "768"))
-
-# Files that exist in the KB folder but must never become searchable chunks.
+CHUNK_VERSION = "2"
 NOT_INDEXED = {"README.md", "knowledge-policy.md", "TODO.md"}
 MAX_CHUNK_CHARS = 1800
-MIN_CHUNK_CHARS = 40
 
 
-@dataclass
+@dataclass(frozen=True)
 class Chunk:
     id: str
     text: str
@@ -51,53 +25,56 @@ class Chunk:
     title: str
     section: str
     category: str
+    status: str
+    url: str
 
+    def metadata(self) -> dict:
+        return {
+            key: getattr(self, key) for key in ("source", "title", "section", "category", "status", "url")
+        }
 
-# ---------- reading markdown ----------
 
 def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8-sig")  # -sig handles a Windows BOM
+    return path.read_text(encoding="utf-8-sig")
 
 
-def split_frontmatter(text: str):
-    """Return (metadata dict, body) for a file that may start with --- ... ---."""
-    m = re.match(r"\A---\s*\n(.*?)\n---\s*\n?", text, flags=re.S)
-    if not m:
+def split_frontmatter(text: str) -> tuple[dict[str, str], str]:
+    """Supports flat string metadata, not full YAML."""
+    match = re.match(r"\A---\s*\n(.*?)\n---\s*\n?", text, flags=re.S)
+    if not match:
         return {}, text
     meta = {}
-    for line in m.group(1).splitlines():
+    for line in match.group(1).splitlines():
         if ":" in line:
             key, value = line.split(":", 1)
             meta[key.strip()] = value.strip().strip("\"'")
-    return meta, text[m.end():]
+    return meta, text[match.end() :]
 
 
 def clean_body(body: str) -> str:
-    """Drop HTML comments (drafts / TODOs) so they never reach the index."""
-    return re.sub(r"<!--.*?-->", "", body, flags=re.S).strip()
+    body = re.sub(r"<!--.*?-->", "", body, flags=re.S)
+    body = re.sub(r"(?im)^.*\b(?:phone|mobile|home address)\s*:[^\n]*", "", body)
+    return body.strip()
 
 
-def load_markdown_body(name: str) -> str:
-    _, body = split_frontmatter(read_text(KB_DIR / name))
+def load_markdown_body(name: str, *, public_only: bool = True) -> str:
+    path = settings().resolved_path(settings().kb_dir) / name
+    meta, body = split_frontmatter(read_text(path))
+    if public_only and meta.get("visibility") != "public":
+        raise ValueError(f"Knowledge file is not explicitly public: {name}")
     return clean_body(body)
 
 
-@lru_cache(maxsize=1)
 def load_policy() -> str:
-    return load_markdown_body("knowledge-policy.md")
+    return load_markdown_body("knowledge-policy.md", public_only=False)
 
 
-@lru_cache(maxsize=1)
 def load_core_profile() -> str:
     return load_markdown_body("profile.md")
 
 
-# ---------- chunking ----------
-
-def split_sections(body: str):
-    """Split on '## ' headings. Returns (title from the '# ' line, [(section, text)])."""
-    title = "Untitled"
-    sections, name, buf = [], "Overview", []
+def split_sections(body: str) -> tuple[str, list[tuple[str, str]]]:
+    title, name, buf, sections = "Untitled", "Overview", [], []
     for line in body.splitlines():
         if line.startswith("# "):
             title = line[2:].strip()
@@ -107,87 +84,129 @@ def split_sections(body: str):
         else:
             buf.append(line)
     sections.append((name, "\n".join(buf).strip()))
-    return title, [(n, t) for n, t in sections if t]
+    return title, [(name, text) for name, text in sections if text]
 
 
-def split_long(text: str, limit: int):
-    """Break an oversized section at paragraph boundaries."""
-    if len(text) <= limit:
-        return [text]
-    parts, cur = [], ""
-    for para in re.split(r"\n\s*\n", text):
-        if cur and len(cur) + len(para) + 2 > limit:
-            parts.append(cur)
-            cur = para
-        else:
-            cur = f"{cur}\n\n{para}" if cur else para
-    if cur:
-        parts.append(cur)
+def split_long(text: str, limit: int) -> list[str]:
+    """Prefer paragraph/word boundaries, but enforce a hard character cap."""
+    if limit < 1:
+        raise ValueError("Chunk limit must be positive")
+    parts = []
+    while len(text) > limit:
+        end = text.rfind("\n\n", 0, limit + 1)
+        if end < limit // 2:
+            end = text.rfind(" ", 0, limit + 1)
+        if end < limit // 2:
+            end = limit
+        parts.append(text[:end].strip())
+        text = text[end:].strip()
+    if text.strip():
+        parts.append(text.strip())
     return parts
 
 
-def build_chunks(kb_dir: Path = None):
-    kb_dir = kb_dir or KB_DIR
-    chunks = []
-    for path in sorted(kb_dir.rglob("*.md")):
-        if path.name in NOT_INDEXED:
+def build_chunks(kb_dir: Path | None = None) -> list[Chunk]:
+    directory = kb_dir or settings().resolved_path(settings().kb_dir)
+    chunks, seen = [], set()
+    for path in sorted(directory.rglob("*.md")):
+        if path.name in NOT_INDEXED or path.is_symlink():
             continue
         meta, body = split_frontmatter(read_text(path))
-        if meta.get("visibility", "public") != "public":
+        if meta.get("visibility") != "public":
             continue
-        rel = path.relative_to(kb_dir).as_posix()
-        title, sections = split_sections(clean_body(body))
+        body = clean_body(body)
+        rel = path.relative_to(directory).as_posix()
+        title, sections = split_sections(body)
+        link = re.search(r"https://github\.com/[\w.-]+/[\w.-]+", body)
+        url = link.group(0) if link else ""
         for section, text in sections:
-            for i, piece in enumerate(split_long(text, MAX_CHUNK_CHARS)):
-                if len(piece) < MIN_CHUNK_CHARS:
+            prefix = f"{title} — {section}\n\n"
+            if len(prefix) >= MAX_CHUNK_CHARS:
+                raise ValueError(f"Heading too long: {rel}")
+            for part, piece in enumerate(split_long(text, MAX_CHUNK_CHARS - len(prefix))):
+                identity = hashlib.sha256(f"{rel}\0{section}\0{part}\0{piece}".encode()).hexdigest()
+                if identity in seen:
                     continue
-                label = section if i == 0 else f"{section} (part {i + 1})"
+                seen.add(identity)
                 chunks.append(
                     Chunk(
-                        id=f"{rel}#{len(chunks)}",
-                        # The header line keeps every chunk self-explanatory.
-                        text=f"{title} \u2014 {label}\n\n{piece}",
-                        source=rel,
-                        title=title,
-                        section=label,
-                        category=meta.get("category", ""),
+                        identity,
+                        prefix + piece,
+                        rel,
+                        title,
+                        section,
+                        meta.get("category", ""),
+                        meta.get("status", ""),
+                        url,
                     )
                 )
     return chunks
 
 
-# ---------- embeddings ----------
+def corpus_fingerprint(chunks: list[Chunk]) -> str:
+    payload = [(c.id, c.metadata()) for c in chunks]
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+def index_contract() -> dict:
+    cfg = settings()
+    return {
+        "embedding_model": cfg.gemini_embed_model,
+        "dimensions": cfg.gemini_embed_dim,
+        "normalization": "l2",
+        "chunk_version": CHUNK_VERSION,
+        "hnsw:space": "cosine",
+    }
+
+
+def normalize(vector, dimensions: int) -> list[float]:
+    if len(vector) != dimensions or not all(math.isfinite(v) for v in vector):
+        raise ValueError("Embedding dimensions or values are invalid")
+    norm = math.sqrt(sum(v * v for v in vector))
+    if norm == 0:
+        raise ValueError("Embedding has zero magnitude")
+    return [v / norm for v in vector]
+
 
 @lru_cache(maxsize=1)
 def gemini_client():
     from google import genai
-
-    key = os.getenv("GEMINI_API_KEY")
-    if not key:
-        raise RuntimeError("GEMINI_API_KEY is missing. Copy env.example to .env and fill it in.")
-    return genai.Client(api_key=key)
-
-
-def embed(texts, task_type: str):
-    """task_type: RETRIEVAL_DOCUMENT when indexing, RETRIEVAL_QUERY for questions."""
     from google.genai import types
 
-    client, vectors = gemini_client(), []
-    for i in range(0, len(texts), 50):
-        batch = texts[i:i + 50]
+    cfg = settings()
+    if not cfg.gemini_api_key.get_secret_value():
+        raise RuntimeError("Set GEMINI_API_KEY in the server environment")
+    return genai.Client(
+        api_key=cfg.gemini_api_key.get_secret_value(),
+        http_options=types.HttpOptions(timeout=cfg.request_timeout_seconds * 1000),
+    )
+
+
+def embed(texts: list[str], task_type: str) -> list[list[float]]:
+    from google.genai import types
+
+    if task_type not in {"RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT"}:
+        raise ValueError("Unsupported embedding task")
+    if not texts:
+        return []
+    cfg, client, vectors = settings(), gemini_client(), []
+    for offset in range(0, len(texts), 50):
+        batch = texts[offset : offset + 50]
         for attempt in range(4):
             try:
-                res = client.models.embed_content(
-                    model=EMBED_MODEL,
+                result = client.models.embed_content(
+                    model=cfg.gemini_embed_model,
                     contents=batch,
                     config=types.EmbedContentConfig(
-                        task_type=task_type, output_dimensionality=EMBED_DIM
+                        task_type=task_type, output_dimensionality=cfg.gemini_embed_dim
                     ),
                 )
-                vectors.extend(e.values for e in res.embeddings)
+                if not result.embeddings or len(result.embeddings) != len(batch):
+                    raise ValueError("Embedding response count mismatch")
+                vectors.extend(normalize(e.values, cfg.gemini_embed_dim) for e in result.embeddings)
                 break
-            except Exception:
-                if attempt == 3:
+            except Exception as exc:
+                if getattr(exc, "code", None) not in {429, 500, 502, 503, 504} or attempt == 3:
                     raise
-                time.sleep(2 * 2 ** attempt)  # simple backoff for free-tier rate limits
+                time.sleep(2**attempt)
     return vectors

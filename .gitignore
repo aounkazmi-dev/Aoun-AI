@@ -21,3 +21,20 @@ eval_output.md
 .idea/
 .DS_Store
 Thumbs.db
+
+# Build and test artifacts
+node_modules/
+frontend/dist/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+test-results/
+playwright-report/
+coverage/
+.coverage
+evaluation/results*.json
+.cache/
+*.tsbuildinfo
+.vercel/

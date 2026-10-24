@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: aounos-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.lock
+    startCommand: python -m backend.index_snapshot restore && exec uvicorn backend.api:app --host 0.0.0.0 --port $PORT --no-proxy-headers
+    healthCheckPath: /api/ready
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: CHROMA_DIR
+        value: /tmp/aounos-chroma
+      - key: ANONYMIZED_TELEMETRY
+        value: "False"
+      - key: DEMO_MODE
+        value: "false"
+      - key: PRIMARY_PROVIDER
+        value: auto
+      - key: GEMINI_EMBED_MODEL
+        value: gemini-embedding-001
+      - key: GEMINI_EMBED_DIM
+        value: "768"
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: MAX_CONCURRENT_REQUESTS
+        value: "2"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

@@ -1,0 +1,12 @@
+.git
+.env
+**/.env
+.venv
+.cache
+**/node_modules
+**/dist
+**/__pycache__
+backend/chroma_db
+test-results
+frontend/test-results
+docs/screenshots

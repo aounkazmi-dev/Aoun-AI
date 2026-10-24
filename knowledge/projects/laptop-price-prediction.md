@@ -1,4 +1,5 @@
 ---
+visibility: public
 category: project
 name: Laptop Price Prediction
 status: built

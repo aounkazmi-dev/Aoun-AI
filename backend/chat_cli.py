@@ -1,52 +1,55 @@
-"""Talk to the bot in the terminal.
+"""Terminal adapter. Run from the repository root: python -m backend.chat_cli."""
 
-    python chat_cli.py            # normal chat
-    python chat_cli.py --debug    # also show which chunks were retrieved
-"""
 import argparse
+import logging
 
-import rag
+from backend import demo, rag
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--debug", action="store_true", help="show retrieved chunks")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--demo", action="store_true", help="Offline lexical lookup; no AI generation")
     args = parser.parse_args()
-
-    print("Aoun AI (terminal). Ask about Aoun. Type 'exit' to quit.\n")
+    print("AounOS — " + ("offline document preview" if args.demo else "personal AI portfolio assistant"))
+    print("Type exit to quit.\n")
     history = []
     while True:
         try:
             question = input("you > ").strip()
+            if question.lower() in {"exit", "quit"}:
+                break
+            if not question:
+                continue
+            if args.demo:
+                answer, chunks = demo.answer(question, history)
+                pieces, info = iter([answer]), {"provider": "offline"}
+            else:
+                messages, chunks = rag.prepare(question, history)
+                info = {}
+                pieces = rag.stream_reply(messages, info)
+            if args.debug:
+                for chunk in chunks:
+                    print(f"  [{chunk['id']}] {chunk['source']} / {chunk['section']}")
+            print("aounos > ", end="", flush=True)
+            reply = ""
+            for piece in pieces:
+                print(piece, end="", flush=True)
+                reply += piece
+            print("\n")
+            history = (
+                history + [{"role": "user", "content": question}, {"role": "assistant", "content": reply}]
+            )[-6:]
         except (EOFError, KeyboardInterrupt):
-            print()
+            print("\nGoodbye.")
             break
-        if question.lower() in {"exit", "quit"}:
-            break
-        if not question:
-            continue
-
-        try:
-            messages, chunks = rag.prepare(question, history)
-        except ValueError as e:
-            print(f"  ({e})\n")
-            continue
-
-        if args.debug:
-            for c in chunks:
-                print(f"  [{c['distance']:.3f}] {c['source']} > {c['section']}")
-
-        print("bot > ", end="", flush=True)
-        reply, info = "", {}
-        for piece in rag.stream_reply(messages, info):
-            print(piece, end="", flush=True)
-            reply += piece
-        print("\n" + (f"  (answered by {info.get('provider')})\n" if args.debug else ""))
-
-        history += [
-            {"role": "user", "content": question},
-            {"role": "assistant", "content": reply},
-        ]
+        except ValueError as exc:
+            print(f"\n{exc}\n")
+        except Exception as exc:
+            logging.getLogger("aoun.cli").warning("request_failed error_type=%s", type(exc).__name__)
+            print(
+                "\nThe answer could not be completed. Check server configuration and index readiness, then retry.\n"
+            )
 
 
 if __name__ == "__main__":

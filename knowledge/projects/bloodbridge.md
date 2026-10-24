@@ -1,4 +1,5 @@
 ---
+visibility: public
 category: project
 name: BloodBridge
 status: built

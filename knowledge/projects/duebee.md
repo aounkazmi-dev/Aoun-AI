@@ -1,4 +1,5 @@
 ---
+visibility: public
 category: project
 name: DueBee
 status: built_and_deployed

@@ -9,7 +9,6 @@ last_updated: 2026-10-20
 ## How to reach Aoun
 
 - Email: aoun.abbas.dev@gmail.com
-- Phone: 03314894180
 - LinkedIn: https://linkedin.com/in/aoun-abbas-dev
 - GitHub: https://github.com/aounkazmi-dev
 

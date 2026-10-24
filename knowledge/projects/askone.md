@@ -1,4 +1,5 @@
 ---
+visibility: public
 category: project
 name: AskOne
 status: built_and_deployed
