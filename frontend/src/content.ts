@@ -8,8 +8,8 @@ export const prompts = [
     text: "Tell me about DataBuddy and AskOne.",
   },
   {
-    label: "How does AskOne work?",
-    text: "How does AskOne use retrieval-augmented generation?",
+    label: "What are you learning next?",
+    text: "What is Aoun learning next, and what are his learning goals?",
   },
   {
     label: "What are your skills?",

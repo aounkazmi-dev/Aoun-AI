@@ -13,7 +13,7 @@ export function Welcome({ busy, onAsk }: AskProps) {
   return (
     <section className="welcome">
       <div className="intro-eyebrow">
-        <span className="line" /> THE HUMAN BEHIND THE CODE
+        THE HUMAN BEHIND THE CODE
       </div>
       <div className="hero-row">
         <div className="hero-copy">
