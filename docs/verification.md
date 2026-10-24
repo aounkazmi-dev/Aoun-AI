@@ -4,7 +4,9 @@ Local verification performed on Windows with Python 3.13 and Node 22.
 
 Deployment preparation: 35 backend tests, 6 frontend unit tests, the production build, and 12 browser tests passed. The additional browser cases exercise navigation, resume access, chat, and sources at 320, 360, 430, 768, and 1024 pixels with no horizontal overflow. The public snapshot restored 78 chunks into a fresh Chroma database without provider calls; stale and invalid snapshots were rejected. These are local checks; hosted results are recorded separately after deployment.
 
-Hosted frontend: Vercel deployment `dpl_4njYCjZKHemk2XaozYAyrAu937vf` reached READY for commit `1999413`. A Chrome check against `https://aoun-abbas-ai.vercel.app` returned HTTP 200, downloaded `Aoun_Abbas_Resume.pdf`, and detected no horizontal overflow or page runtime errors at 390 × 844. GitHub Actions run `40084226529` passed on Linux. Render provisioning and live hosted chat are still pending.
+GitHub Actions run `40084226529` passed on Linux. Hosted verification used Vercel deployment `dpl_8dWKU9Pw1Ct6X8HgDbdYBitr4aBQ` and Render deployment `dep-dbe8e1lg1s2s73eog1tg`, commit `b6eb0e4`. The backend restored its 78-chunk snapshot, and `/api/ready` returned HTTP 200 in live mode.
+
+`node scripts/hosted-smoke.mjs --live` (from `frontend/`) checked the actual production origins in Chrome at 390 × 844. One real ScamShield PK question preserved its planned status, completed with Gemini query embeddings and Groq generation, emitted SSE token/done events, and passed the exact CORS origin check. Source drawer, PDF download, browser-history reload, and desktop resize passed; no horizontal overflow or page runtime errors were observed. The complete browser flow took about 11.2 seconds; the server recorded 8.4 seconds for the chat request. This is a single smoke check, not a latency benchmark. Screenshots: `screenshots/deployed-mobile-chat.png` and `screenshots/deployed-desktop-chat.png`.
 
 - Python checks: 32 tests passed in the final suite, including actual temporary Chroma persistence with deterministic fake embeddings, ingestion activation, stale-index detection, embedding batching/normalization, privacy filtering, stream failure behavior, provider ordering, API contracts, limits, and unavailable configuration.
 - Frontend transport/storage unit tests: 6 passed.
@@ -24,4 +26,4 @@ Manual review confirmed correct planned-project status, no invented formal emplo
 
 A real Chrome smoke test completed a live streamed question about ScamShield PK in approximately 9.5 seconds, preserved its planned status, opened and closed the source drawer, and reported no browser runtime errors. Screenshot: `screenshots/live-chat.png`. The temporary browser and server were stopped after verification.
 
-Docker is not installed in the local environment, so the supplied image/Compose setup has not been built here. No public deployment, uptime, production-readiness, or general answer-accuracy claim is made.
+Docker is not installed in the local environment, so the supplied image/Compose setup has not been built here. Public Vercel/Render hosting is verified as described above; uptime, production readiness, and general answer accuracy are not established by these checks. The free backend sleeps when idle and all visitors currently share the proxy-facing rate-limit bucket.

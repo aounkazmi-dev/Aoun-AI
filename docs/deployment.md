@@ -2,7 +2,9 @@
 
 ## Vercel frontend + Render backend (free tiers)
 
-**Status:** Vercel frontend deployed at [aoun-abbas-ai.vercel.app](https://aoun-abbas-ai.vercel.app), verified for mobile rendering and resume download. Render backend provisioning is pending private-repository access and credential configuration; end-to-end hosted AI chat is not yet verified.
+**Status:** deployed and verified on October 24, 2026. Frontend: [aoun-abbas-ai.vercel.app](https://aoun-abbas-ai.vercel.app). Backend: [aounos-api.onrender.com](https://aounos-api.onrender.com/api/ready). Live browser verification covered SSE streaming, CORS, sources, resume download, mobile layout, and history after reload.
+
+Vercel project: `aounos`. Render service: `srv-dbe8e1dg1s2s73eog100` in the owner's confirmed workspace, free plan, Oregon. Both track `main`. The repository remains private.
 
 Vercel serves `frontend/` as a Vite static application. Render runs FastAPI from the repository root. Chroma runs inside that service; no third database service is needed. `deployment/public-index.json.gz` contains public embedding vectors keyed by chunk IDs and an embedding/corpus compatibility contract. The public documents themselves come from `knowledge/`.
 
@@ -11,6 +13,8 @@ At startup, Render validates the snapshot against the current source files and r
 ### Render configuration
 
 Import the root `render.yaml` Blueprint from `https://github.com/aounkazmi-dev/Aoun-AI`. It specifies the free Python service, locked dependencies, startup restore, one worker, and `/api/ready` health check. Supply these values in Render:
+
+The existing service was provisioned directly through the Render connector rather than linked to a Blueprint. It currently auto-deploys on commits and uses Render's default TCP health check; `/api/ready` was separately verified over HTTPS. The Blueprint documents the desired HTTP readiness check and deployment-after-CI configuration for a future managed Blueprint rollout. Do not import a second service just to change these settings.
 
 | Variable | Value |
 | --- | --- |
@@ -27,6 +31,8 @@ Render free instances sleep after inactivity and have ephemeral storage, so firs
 Import the same repository with **Root Directory `frontend`**, framework Vite, build `npm run build`, output `dist`. `frontend/vercel.json` supplies build and security headers.
 
 Before building, set `VITE_API_BASE_URL` to the actual Render HTTPS origin, such as `https://<assigned-service>.onrender.com`. This is public configuration. API calls go directly to Render and stream SSE; no Vercel Function or proxy is required. Add the actual Vercel production origin to Render's `ALLOWED_ORIGINS`. Preview deployments need explicitly allowed origins if they should use live chat.
+
+Current production value: `VITE_API_BASE_URL=https://aounos-api.onrender.com`. Render permits the production origins `https://aoun-abbas-ai.vercel.app`, `https://aounos.vercel.app`, and the account's production Vercel alias. Provider credentials were configured only in Render, with the owner's explicit consent.
 
 ### Updating projects later
 

@@ -8,9 +8,11 @@ Ask about projects, technical decisions, skills, and the learning journey. AounO
 
 ## Hosting
 
-Deployment configuration targets **Vercel** for React and **Render** for FastAPI. Chroma runs inside the Render service, restored from a versioned public embedding snapshot at startup. No separate database subscription is required. The free Render plan can sleep when idle; waking it introduces a delay.
+Deployed on **Vercel** for React and **Render** for FastAPI. Chroma runs inside the Render service, restored from a versioned public embedding snapshot at startup. No separate database subscription is required. The free Render plan can sleep when idle; waking it introduces a delay.
 
-**Frontend:** [aoun-abbas-ai.vercel.app](https://aoun-abbas-ai.vercel.app). Backend provisioning and live-chat connection are pending Render repository access and server-side credential configuration. See [deployment instructions and current status](docs/deployment.md).
+**Live app:** [aoun-abbas-ai.vercel.app](https://aoun-abbas-ai.vercel.app) · **Backend readiness:** [aounos-api.onrender.com/api/ready](https://aounos-api.onrender.com/api/ready) · **CI:** [GitHub Actions](https://github.com/aounkazmi-dev/Aoun-AI/actions)
+
+Hosted streaming, sources, resume download, mobile layout, and browser-history persistence were verified on October 24, 2026. See [deployment instructions](docs/deployment.md) and [verification results and limitations](docs/verification.md).
 
 ### Where conversations are stored
 
