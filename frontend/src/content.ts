@@ -1,28 +1,19 @@
-import { Sparkles, FolderCode, Layers, GraduationCap } from "lucide-react";
 export const prompts = [
   {
-    icon: Sparkles,
-    label: "Meet the builder",
+    label: "Who is Aoun?",
     text: "Who is Aoun, and what is he working toward?",
-    hint: "The person behind the projects",
   },
   {
-    icon: FolderCode,
-    label: "Explore my projects",
+    label: "What have you built?",
     text: "Tell me about DataBuddy and AskOne.",
-    hint: "From an idea to working software",
   },
   {
-    icon: Layers,
-    label: "Go under the hood",
+    label: "How does AskOne work?",
     text: "How does AskOne use retrieval-augmented generation?",
-    hint: "Architecture, tools, and trade-offs",
   },
   {
-    icon: GraduationCap,
-    label: "Skills & experience",
+    label: "What are your skills?",
     text: "What are Aoun’s technical skills and project experience?",
-    hint: "What I’ve built. What I’m learning.",
   },
 ];
 export const projects = [

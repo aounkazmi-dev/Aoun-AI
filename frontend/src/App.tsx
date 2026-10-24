@@ -301,7 +301,7 @@ export default function App() {
       messages
         .map(
           (m) =>
-            `## ${m.role === "user" ? "You" : "AounOS"}${m.mode === "demo" ? " (offline preview)" : ""}\n\n${m.content}\n\n${m.sources?.map((s) => `[${s.id}] ${s.title} — ${s.section}`).join("\n") || ""}`,
+            `## ${m.role === "user" ? "You" : "AounOS"}${m.mode === "demo" ? " (offline preview)" : ""}\n\n${m.content}\n\n${m.sources?.map((s) => `[${s.id}] ${s.title}: ${s.section}`).join("\n") || ""}`,
         )
         .join("\n\n");
     const url = URL.createObjectURL(
@@ -470,7 +470,11 @@ export default function App() {
             ))}
         </div>
         <div className="sidebar-bottom">
-          <a className="availability resume-download" href="/Aoun_Abbas_Resume.pdf" download="Aoun_Abbas_Resume.pdf">
+          <a
+            className="availability resume-download"
+            href="/Aoun_Abbas_Resume.pdf"
+            download="Aoun_Abbas_Resume.pdf"
+          >
             <span>Download Aoun’s resume</span>
             <Download size={15} />
           </a>

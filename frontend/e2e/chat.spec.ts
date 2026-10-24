@@ -5,19 +5,29 @@ test("resume download and corner companion", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
   const download = page.waitForEvent("download");
-  await page.getByRole("link", { name: "Download Aoun’s resume", exact: true }).click();
+  await page
+    .getByRole("link", { name: "Download Aoun’s resume", exact: true })
+    .click();
   expect((await download).suggestedFilename()).toBe("Aoun_Abbas_Resume.pdf");
   const response = await page.request.get("/Aoun_Abbas_Resume.pdf");
   expect(response.ok()).toBeTruthy();
   expect((await response.body()).subarray(0, 5).toString()).toBe("%PDF-");
   await page.getByRole("button", { name: "Meet mini Aoun" }).click();
   await expect(page.getByText("Hey, I’m mini Aoun.")).toBeVisible();
-  await page.screenshot({ path: "../docs/screenshots/resume-companion.png", animations: "disabled" });
+  await page.screenshot({
+    path: "../docs/screenshots/resume-companion.png",
+    animations: "disabled",
+  });
   await page.getByRole("button", { name: "Hide Aoun companion" }).click();
-  await expect(page.getByRole("button", { name: "Meet mini Aoun" })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Meet mini Aoun" }),
+  ).toHaveCount(0);
   await page.getByRole("button", { name: "Show Aoun companion" }).click();
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.locator(".companion-character img")).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".companion-character img")).toHaveCSS(
+    "animation-name",
+    "none",
+  );
   await page.setViewportSize({ width: 390, height: 844 });
   const companion = await page.locator(".companion").boundingBox();
   const composer = await page.locator(".composer").boundingBox();
@@ -31,7 +41,7 @@ test("chat streams, exposes evidence, persists, exports and deletes", async ({
   await expect(
     page.getByText("Offline preview", { exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: /Explore my projects From/ }).click();
+  await page.getByRole("button", { name: /What have you built\?/ }).click();
   await expect(
     page.getByRole("button", { name: "Retry", exact: true }),
   ).toBeVisible({ timeout: 20000 });

@@ -13,23 +13,20 @@ export function Welcome({ busy, onAsk }: AskProps) {
   return (
     <section className="welcome">
       <div className="intro-eyebrow">
-        <span className="line" /> THE PORTFOLIO, REIMAGINED
+        <span className="line" /> THE HUMAN BEHIND THE CODE
       </div>
       <div className="hero-row">
         <div className="hero-copy">
-          <div className="hello">
-            Hey, I’m Aoun<span className="blue-period">.</span>
+          <h1>Hey, I'm Aoun.</h1>
+          <div className="hero-intro">
+            <p>The things we build say something about the way we think.</p>
+            <p>But they never tell the whole story.</p>
+            <p>
+              There's more to me than projects, skills, and a few lines on a
+              resume.
+            </p>
+            <p>Ask what you want to know.</p>
           </div>
-          <h1>
-            Get to know me.
-            <br />
-            <span>One question at a time.</span>
-          </h1>
-          <p>
-            I build things with data, code, and a healthy dose of curiosity.
-            <br className="desktop-break" /> Meet my AI sidekick — your guide to
-            the work and the person behind it.
-          </p>
         </div>
         <div className="hero-avatar">
           <div className="avatar-orbit" />
@@ -49,28 +46,17 @@ export function Welcome({ busy, onAsk }: AskProps) {
         <i />
         <span>Lahore, Pakistan</span>
       </div>
-      <div className="prompt-heading">
-        <span>A FEW PLACES TO START</span>
-        <span>
-          Or follow your curiosity <ArrowUpRight size={13} />
-        </span>
-      </div>
-      <div className="prompt-grid">
+      <div className="question-heading">A FEW PLACES TO START</div>
+      <div className="question-links" aria-label="Suggested questions">
         {prompts.map((p) => (
           <button
-            className="prompt-card"
+            className="question-link"
             key={p.label}
             onClick={() => onAsk(p.text)}
             disabled={busy}
           >
-            <div>
-              <span className="prompt-icon">
-                <p.icon size={18} />
-              </span>
-              <ArrowUpRight className="prompt-arrow" size={17} />
-            </div>
-            <strong>{p.label}</strong>
-            <span>{p.hint}</span>
+            <span>{p.label}</span>
+            <ArrowUpRight size={15} aria-hidden="true" />
           </button>
         ))}
       </div>
@@ -168,7 +154,7 @@ export function About() {
       <div className="about-body">
         <p>
           I’m interested in what happens when data and software come together to
-          do something useful — from classical machine learning to
+          do something useful, from classical machine learning to
           retrieval-grounded applications and agents that work with real tools.
         </p>
         <p>
