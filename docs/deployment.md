@@ -2,7 +2,7 @@
 
 ## Vercel frontend + Render backend (free tiers)
 
-**Status:** configuration prepared; account connection and hosted verification pending. No live URLs are claimed yet.
+**Status:** Vercel frontend deployed at [aoun-abbas-ai.vercel.app](https://aoun-abbas-ai.vercel.app), verified for mobile rendering and resume download. Render backend provisioning is pending private-repository access and credential configuration; end-to-end hosted AI chat is not yet verified.
 
 Vercel serves `frontend/` as a Vite static application. Render runs FastAPI from the repository root. Chroma runs inside that service; no third database service is needed. `deployment/public-index.json.gz` contains public embedding vectors keyed by chunk IDs and an embedding/corpus compatibility contract. The public documents themselves come from `knowledge/`.
 

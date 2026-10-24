@@ -10,7 +10,11 @@ Ask about projects, technical decisions, skills, and the learning journey. AounO
 
 Deployment configuration targets **Vercel** for React and **Render** for FastAPI. Chroma runs inside the Render service, restored from a versioned public embedding snapshot at startup. No separate database subscription is required. The free Render plan can sleep when idle; waking it introduces a delay.
 
-See [deployment instructions and current status](docs/deployment.md). Live URLs will be recorded after the account connections and deployed end-to-end checks are complete.
+**Frontend:** [aoun-abbas-ai.vercel.app](https://aoun-abbas-ai.vercel.app). Backend provisioning and live-chat connection are pending Render repository access and server-side credential configuration. See [deployment instructions and current status](docs/deployment.md).
+
+### Where conversations are stored
+
+Chat history is saved in the visitor's browser `localStorage` under `aounos.conversations.v1` (up to 30 conversations and 100 messages per conversation). It survives refreshes, but does not sync across devices, browsers, or site domains. Clearing site data removes it. Visitors can export or delete conversations. The backend does not store chats; Chroma stores public portfolio knowledge only. Live requests send the current question and up to six recent messages to the backend/provider.
 
 ## What is implemented
 

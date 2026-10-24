@@ -4,6 +4,8 @@ Local verification performed on Windows with Python 3.13 and Node 22.
 
 Deployment preparation: 35 backend tests, 6 frontend unit tests, the production build, and 12 browser tests passed. The additional browser cases exercise navigation, resume access, chat, and sources at 320, 360, 430, 768, and 1024 pixels with no horizontal overflow. The public snapshot restored 78 chunks into a fresh Chroma database without provider calls; stale and invalid snapshots were rejected. These are local checks; hosted results are recorded separately after deployment.
 
+Hosted frontend: Vercel deployment `dpl_4njYCjZKHemk2XaozYAyrAu937vf` reached READY for commit `1999413`. A Chrome check against `https://aoun-abbas-ai.vercel.app` returned HTTP 200, downloaded `Aoun_Abbas_Resume.pdf`, and detected no horizontal overflow or page runtime errors at 390 × 844. GitHub Actions run `40084226529` passed on Linux. Render provisioning and live hosted chat are still pending.
+
 - Python checks: 32 tests passed in the final suite, including actual temporary Chroma persistence with deterministic fake embeddings, ingestion activation, stale-index detection, embedding batching/normalization, privacy filtering, stream failure behavior, provider ordering, API contracts, limits, and unavailable configuration.
 - Frontend transport/storage unit tests: 6 passed.
 - Production TypeScript/Vite build: passed.
