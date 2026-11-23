@@ -5,7 +5,7 @@ export const prompts = [
   },
   {
     label: "What have you built?",
-    text: "Tell me about DataBuddy and AskOne.",
+    text: "Tell me about AutoSalon and Reel2Build, then Aoun's other projects.",
   },
   {
     label: "What are you learning next?",
@@ -16,7 +16,39 @@ export const prompts = [
     text: "What are Aoun’s technical skills and project experience?",
   },
 ];
-export const projects = [
+type Project = {
+  title: string;
+  category: string;
+  description: string;
+  stack: string;
+  url?: string;
+  linkLabel?: string;
+  mark: string;
+  color: string;
+};
+
+// Presentation priority: keep this order aligned with knowledge/profile.md.
+export const projects: Project[] = [
+  {
+    title: "AutoSalon",
+    category: "WHATSAPP AI AGENT",
+    description:
+      "A WhatsApp receptionist backend with tool-based appointment booking, voice transcription, and persistent conversation memory.",
+    stack: "LangGraph · FastAPI · Groq · PostgreSQL",
+    mark: "A",
+    color: "mint",
+  },
+  {
+    title: "Reel2Build",
+    category: "MULTIMODAL AI",
+    description:
+      "Turns Instagram Reels and MP4 project demos into video analysis and step-by-step build roadmaps.",
+    stack: "LangGraph · Groq · FFmpeg · React",
+    url: "https://reel2build.onrender.com",
+    linkLabel: "Reel2Build live demo",
+    mark: "R",
+    color: "blue",
+  },
   {
     title: "DataBuddy",
     category: "AGENTIC AI",

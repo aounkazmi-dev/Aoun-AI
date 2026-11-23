@@ -26,7 +26,7 @@ Chat history is saved in the visitor's browser `localStorage` under `aounos.conv
 - FastAPI with validated requests, bounded body size, per-process request/concurrency limits, readiness checks, and structured SSE events.
 - Gemini embeddings, normalized vectors, persistent Chroma cosine retrieval, explicit index compatibility checks, and atomic index activation.
 - Configurable Gemini/Groq generation with fallback **only before the first output**. Auto mode prefers Groq when configured to avoid observed Gemini timeouts.
-- Unit/integration/browser tests and a 20-case evaluation dataset.
+- Unit/integration/browser tests and a 23-case evaluation dataset.
 - An explicit offline preview that returns document excerpts through lexical lookup. It is not AI generation and is labeled throughout the UI.
 
 This is Aoun's personal portfolio project. Knowledge documents contain reported project facts, not an independent audit of every linked repository. Live answer quality must be evaluated with configured provider access.

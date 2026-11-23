@@ -12,9 +12,7 @@ type AskProps = { busy: boolean; onAsk: (text: string) => void };
 export function Welcome({ busy, onAsk }: AskProps) {
   return (
     <section className="welcome">
-      <div className="intro-eyebrow">
-        THE HUMAN BEHIND THE CODE
-      </div>
+      <div className="intro-eyebrow">THE HUMAN BEHIND THE CODE</div>
       <div className="hero-row">
         <div className="hero-copy">
           <h1>Hey, I'm Aoun.</h1>
@@ -110,22 +108,32 @@ export function Projects({ busy, onAsk }: AskProps) {
                 >
                   Explore with AounOS <ArrowRight size={14} />
                 </button>
-                <a
-                  href={project.url}
-                  aria-label={`${project.title} on GitHub`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Github size={18} />
-                </a>
+                {project.url ? (
+                  <a
+                    href={project.url}
+                    aria-label={
+                      project.linkLabel ?? `${project.title} on GitHub`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {project.linkLabel ? (
+                      <ArrowUpRight size={18} />
+                    ) : (
+                      <Github size={18} />
+                    )}
+                  </a>
+                ) : (
+                  <span className="project-stack">Private repository</span>
+                )}
               </div>
             </div>
           </article>
         ))}
       </div>
       <p className="page-footnote">
-        Independent portfolio projects. Follow the repository links for
-        implementation details and current status.
+        Independent portfolio projects, listed in priority order. Explore each
+        project with AounOS or follow its available demo or repository link.
       </p>
     </section>
   );

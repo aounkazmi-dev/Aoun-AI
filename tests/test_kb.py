@@ -64,5 +64,5 @@ def test_normalize():
 
 def test_corpus_has_no_phone_fields():
     chunks = kb.build_chunks()
-    assert len({c.source for c in chunks}) == 16
+    assert len({c.source for c in chunks}) == 18
     assert not any("Phone:" in c.text for c in chunks)

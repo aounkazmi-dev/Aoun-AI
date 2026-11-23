@@ -1,7 +1,7 @@
 ---
 category: profile
 visibility: public
-last_updated: 2026-10-20
+last_updated: 2026-11-23
 ---
 
 # Aoun Abbas
@@ -26,14 +26,19 @@ Aoun Abbas is a Computer Science student at FAST-NUCES Lahore, building toward a
 
 ## Evidence of practical work
 
-Aoun's public portfolio includes:
+Aoun's featured projects are presented in this priority order. For broad questions about his projects or best work, introduce AutoSalon first and Reel2Build second, followed by the remaining featured projects below. This is Aoun's chosen presentation order, not a measured ranking of quality. For questions about a specific project, focus on that project.
 
-- **DataBuddy:** an agentic data-analysis application that combines natural-language questions with SQL, statistical tools, visualizations, and a Python fallback.
-- **AskOne:** a resume-grounded mock-interview application using RAG, embeddings, a vector store, and an LLM to generate questions and feedback reports.
-- **News Classifier:** an NLP classification application using TF-IDF and Logistic Regression, with a reported test accuracy of approximately 91% on the AG News dataset.
+1. **AutoSalon:** a WhatsApp AI receptionist backend using LangGraph tools, FastAPI, Groq, and PostgreSQL. It answers business questions, transcribes voice notes, remembers conversations, checks availability, and commits appointments after explicit confirmation. Its repository is private; a public live demo has not been established here.
+2. **Reel2Build:** a video-analysis application that accepts an Instagram Reel or MP4, analyzes sampled frames and available speech, and generates a build roadmap on request for detected project demos. It uses LangGraph, Groq, FFmpeg, FastAPI, and React; its repository documents a live Render demo.
+3. **DataBuddy:** an agentic data-analysis application that combines natural-language questions with SQL, statistical tools, visualizations, and a Python fallback.
+4. **AskOne:** a resume-grounded mock-interview application using RAG, embeddings, a vector store, and an LLM to generate questions and feedback reports.
+5. **News Classifier:** an NLP classification application using TF-IDF and Logistic Regression, with a reported test accuracy of approximately 91% on the AG News dataset.
+6. **DueBee:** a deployed bill-management application with authentication, a PostgreSQL-backed API, automated email reminders, and simple statistical forecasting.
+
+Additional portfolio projects include:
+
 - **Laptop Price Prediction:** a regression project covering preprocessing, encoding, scaling, model training, and evaluation.
 - **BloodBridge:** a full-stack blood donation management system with authentication, donor and request workflows, and inventory administration.
-- **DueBee:** a deployed bill-management application with authentication, a PostgreSQL-backed API, automated email reminders, and simple statistical forecasting.
 
 These are independent, educational, or portfolio projects. They should not be represented as professional employment unless Aoun later supplies verified employment details.
 
@@ -45,6 +50,7 @@ Use a confident, specific, builder-oriented voice. Emphasize that he is actively
 
 - GitHub: https://github.com/aounkazmi-dev
 - LinkedIn: https://linkedin.com/in/aoun-abbas-dev
+- Reel2Build live demo: https://reel2build.onrender.com
 - DataBuddy live demo: https://databuddyhere.streamlit.app
 - AskOne live demo: https://askone.onrender.com
 - News Classifier live demo: https://news-ai-classifier.streamlit.app/

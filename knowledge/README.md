@@ -12,6 +12,8 @@ This folder is the source of truth for Aoun Abbas's personal AI portfolio assist
 - `goals.md`: career direction and development priorities
 - `knowledge-policy.md`: system instructions for the assistant, not a retrieval document
 - `projects/`: project-specific details and status distinctions
+- `projects/autosalon.md`: first featured project, the WhatsApp AI receptionist backend
+- `projects/reel2build.md`: second featured project, video analysis and build roadmaps
 - `projects/other-projects.md`: additional academic/programming work
 - `projects/scamshield-pk.md`: a planned concept, explicitly not implemented
 
@@ -23,6 +25,7 @@ This folder is the source of truth for Aoun Abbas's personal AI portfolio assist
 4. Never describe independent projects, coursework, or certificates as professional employment.
 5. Skill lists describe reported exposure. Use concrete project evidence to explain what Aoun has actually built.
 6. Keep dates, metrics, URLs, and claims accurate. If a detail is missing or uncertain, say so.
+7. Keep the featured presentation order in `profile.md` aligned with `frontend/src/content.ts`: AutoSalon, Reel2Build, DataBuddy, AskOne, News Classifier, DueBee. Rebuild and export the embedding snapshot after public knowledge changes; see `docs/project-updates.md`.
 
 ## Current positioning
 

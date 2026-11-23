@@ -1,6 +1,9 @@
 [
   {"id":"identity","question":"Who is Aoun Abbas?","expected_sources":["profile.md","about.md"],"required_any":["FAST","Computer Science"]},
   {"id":"education","question":"Where is Aoun studying Computer Science?","expected_sources":["education.md","profile.md"],"required_any":["FAST","NUCES"]},
+  {"id":"autosalon","question":"How does AutoSalon confirm WhatsApp appointment bookings and remember customer conversations?","expected_sources":["projects/autosalon.md"],"required_any":["confirmation","PostgreSQL","proposal"]},
+  {"id":"reel2build","question":"How does Reel2Build analyze a video and generate a build roadmap?","expected_sources":["projects/reel2build.md"],"required_any":["frames","roadmap","LangGraph"]},
+  {"id":"project_priority","question":"What is Aoun's project presentation priority order?","expected_sources":["profile.md"],"required_any":["AutoSalon","Reel2Build"],"manual_review":"Featured projects must begin AutoSalon, Reel2Build, DataBuddy, AskOne, News Classifier, DueBee in that order."},
   {"id":"databuddy","question":"How does DataBuddy use SQL and statistical tools?","expected_sources":["projects/databuddy.md"],"required_any":["SQL","DuckDB"]},
   {"id":"askone","question":"Explain AskOne resume interview retrieval architecture.","expected_sources":["projects/askone.md"],"required_any":["Chroma","retriev"]},
   {"id":"duebee","question":"How does DueBee forecasting work?","expected_sources":["projects/duebee.md"],"required_any":["linear","least-squares"]},
