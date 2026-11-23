@@ -1,6 +1,41 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test("first suggested prompt survives a cold start without manual retry", async ({
+  page,
+}) => {
+  let checks = 0;
+  let posts = 0;
+  await page.route("**/api/ready", (route) => {
+    checks++;
+    return route.fulfill({
+      status: checks < 3 ? 503 : 200,
+      contentType: "application/json",
+      body: JSON.stringify({ ready: checks >= 3 }),
+    });
+  });
+  await page.route("**/api/chat", async (route) => {
+    posts++;
+    if (posts === 1) {
+      await route.fulfill({ status: 502, body: "Service starting" });
+    } else {
+      await route.continue();
+    }
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /Who is Aoun/ }).click();
+  await expect(
+    page.getByText("Connecting to assistant… First visits can take a minute."),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Stop response" }),
+  ).not.toBeVisible({ timeout: 20000 });
+  await expect(page.locator(".message.assistant")).toContainText("Aoun");
+  await expect(page.locator(".message.user")).toHaveCount(1);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  expect(posts).toBe(2);
+});
+
 test("resume download and corner companion", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");

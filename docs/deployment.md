@@ -26,6 +26,8 @@ Never put provider secrets in Vercel `VITE_*` variables or Git. The Blueprint co
 
 Render free instances sleep after inactivity and have ephemeral storage, so first visits may wait for startup. See [official free-tier limits](https://render.com/docs/free). Persistent disks require a paid service. If upgrading later, attach a disk and point `CHROMA_DIR` at its mount path; keep startup restore to handle corpus changes. See [disk documentation](https://render.com/docs/disks).
 
+The chat client waits for `/api/ready` before posting a question, allowing up to 90 seconds for startup. It shows a connecting message while waiting and automatically retries temporary network, gateway, or pre-token stream failures (at most three chat attempts). Stop cancels both startup and chat. Validation errors, rate limits, and answers that have already streamed text require manual retry. This handles wake-up failures; it does not eliminate the free instance's startup delay. Deploy the updated frontend to enable this behavior; no backend configuration change is required.
+
 ### Vercel configuration
 
 Import the same repository with **Root Directory `frontend`**, framework Vite, build `npm run build`, output `dist`. `frontend/vercel.json` supplies build and security headers.

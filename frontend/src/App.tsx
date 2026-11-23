@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import type { Conversation, Message, Source } from "./types";
 import { loadConversations, saveConversations } from "./storage";
-import { consumeStream } from "./stream";
+import { sendChat } from "./chat";
 import { apiUrl } from "./api";
 
 const id = () => crypto.randomUUID();
@@ -40,6 +40,7 @@ export default function App() {
   const [view, setView] = useState<"chat" | "projects" | "about">("chat");
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState("");
   const [storageError, setStorageError] = useState(false);
   const [sidebar, setSidebar] = useState(false);
@@ -239,41 +240,30 @@ export default function App() {
     const controller = new AbortController();
     abort.current = controller;
     try {
-      const response = await fetch(apiUrl("/api/chat"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({
+      await sendChat(
+        {
           message: text.trim(),
           history: previous
             .filter((m) => m.status === "complete")
             .slice(-6)
             .map((m) => ({ role: m.role, content: m.content.slice(0, 1500) })),
-        }),
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(
-          typeof data.detail === "string"
-            ? data.detail
-            : "The assistant is unavailable. Please try again.",
-        );
-      }
-      if (!response.body)
-        throw new Error("Streaming is unavailable in this browser.");
-      await consumeStream(response.body, ({ event, data }) => {
-        if (event === "sources")
-          updateMessage(conversationId, answer.id, {
-            sources: data.sources as Source[],
-            mode: String(data.mode),
-          });
-        if (event === "token")
-          updateMessage(conversationId, answer.id, (m) => ({
-            content: m.content + String(data.text),
-          }));
-        if (event === "done")
-          updateMessage(conversationId, answer.id, { status: "complete" });
-      });
+        },
+        controller.signal,
+        ({ event, data }) => {
+          if (event === "sources")
+            updateMessage(conversationId, answer.id, {
+              sources: data.sources as Source[],
+              mode: String(data.mode),
+            });
+          if (event === "token")
+            updateMessage(conversationId, answer.id, (m) => ({
+              content: m.content + String(data.text),
+            }));
+          if (event === "done")
+            updateMessage(conversationId, answer.id, { status: "complete" });
+        },
+        setConnecting,
+      );
     } catch (e) {
       const stopped = controller.signal.aborted;
       updateMessage(conversationId, answer.id, {
@@ -613,12 +603,20 @@ export default function App() {
                               <div
                                 className="typing"
                                 role="status"
-                                aria-label="Looking through the knowledge base"
+                                aria-label={
+                                  connecting
+                                    ? "Connecting to assistant"
+                                    : "Looking through the knowledge base"
+                                }
                               >
                                 <i />
                                 <i />
                                 <i />
-                                <span>Looking through my notes…</span>
+                                <span>
+                                  {connecting
+                                    ? "Connecting to assistant… First visits can take a minute."
+                                    : "Looking through my notes…"}
+                                </span>
                               </div>
                             ) : (
                               <p className="muted">No answer received.</p>
